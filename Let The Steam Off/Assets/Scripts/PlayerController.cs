@@ -8,7 +8,7 @@ public class PlayerController : MonoBehaviour
     private InputManager inputManager;
     private Vector3 playerVelocity;
     private bool groundedPlayer;
-    private Transform cameraTransform;
+    public Transform playerBody;
 
 
     [SerializeField] private float playerSpeed = 2.0f;
@@ -19,7 +19,6 @@ public class PlayerController : MonoBehaviour
     {
         playerController = GetComponent<CharacterController>();
         inputManager = InputManager.Instance;
-        cameraTransform = Camera.main.transform;
     }
 
     void Update()
@@ -28,7 +27,7 @@ public class PlayerController : MonoBehaviour
 
         Vector2 movement = inputManager.GetPlayerMovement();
         Vector3 move = new Vector3(movement.x, 0f, movement.y);
-        move = cameraTransform.forward * move.z + cameraTransform.right * move.x;
+        move = playerBody.forward * move.z + playerBody.right * move.x;
         playerController.Move(move * Time.deltaTime * playerSpeed);
         PlayerJumped();
         PlayerGravity();

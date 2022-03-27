@@ -7,6 +7,7 @@ public class CinemachineExtensionPOV : CinemachineExtension
     [SerializeField] private float rotatingSpeed = 90f;
     private InputManager inputManager;
     private Vector3 startingRotation;
+    public Transform playerBody;
 
     protected override void Awake()
     {
@@ -29,6 +30,7 @@ public class CinemachineExtensionPOV : CinemachineExtension
                 startingRotation.y -= deltaInput.y * rotatingSpeed * Time.deltaTime;
                 startingRotation.y = Mathf.Clamp(startingRotation.y, -clampAngle, clampAngle);
                 state.RawOrientation = Quaternion.Euler(startingRotation.y, startingRotation.x, 0f);
+                playerBody.rotation = Quaternion.Euler(0f, startingRotation.x, 0f);
             }
         }
     }
