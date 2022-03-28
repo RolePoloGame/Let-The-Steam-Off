@@ -12,6 +12,14 @@ public class PAR : MonoBehaviour
         Instance = this;   
     }
 
+    public InputManager InputManager
+    {
+        get
+        {
+            return InputManager.Instance;
+        }
+    }
+
     public GameObjectReference Player;
 
     [Serializable]

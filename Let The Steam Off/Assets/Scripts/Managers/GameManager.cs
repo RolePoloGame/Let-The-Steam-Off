@@ -4,6 +4,7 @@ using UnityEngine;
 using NaughtyAttributes;
 
 [RequireComponent(typeof(PAR))]
+[RequireComponent(typeof(InputManager))]
 public class GameManager : MonoBehaviour
 {
     
