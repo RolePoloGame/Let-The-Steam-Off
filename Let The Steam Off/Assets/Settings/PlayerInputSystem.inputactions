@@ -6,6 +6,15 @@
             "id": "23808367-126d-4607-8c67-e6681549bf20",
             "actions": [
                 {
+                    "name": "Dash",
+                    "type": "Button",
+                    "id": "439adfc5-915e-456d-b317-090ce4d2338b",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
                     "name": "Movement",
                     "type": "PassThrough",
                     "id": "f88c91ed-e9d5-49be-99ed-b64311e25f62",
@@ -18,15 +27,6 @@
                     "name": "Jump",
                     "type": "Button",
                     "id": "352eb336-edca-48c4-8186-798cefe22cc7",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "Dash",
-                    "type": "Button",
-                    "id": "439adfc5-915e-456d-b317-090ce4d2338b",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -142,8 +142,8 @@
                 },
                 {
                     "name": "",
-                    "id": "d1efb44a-52c3-40e6-96ec-fe7a563fe4d7",
-                    "path": "<Keyboard>/shift",
+                    "id": "47a4ff0a-624d-4da5-8bda-9f4196fc84a3",
+                    "path": "<Keyboard>/q",
                     "interactions": "",
                     "processors": "",
                     "groups": "",

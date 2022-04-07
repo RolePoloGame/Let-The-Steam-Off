@@ -331,6 +331,9 @@ MonoBehaviour:
   playerSpeed: 2
   jumpHeight: 1
   gravityValue: -9.81
+  dashSpeed: 20
+  dashTime: 0.15
+  dashRate: 1
 --- !u!4 &1333742292
 Transform:
   m_ObjectHideFlags: 0

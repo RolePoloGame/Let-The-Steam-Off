@@ -61,4 +61,9 @@ public class InputManager : MonoBehaviour
     {
         return playerInputSystem.Player.Jump.triggered;
     }
+
+    public bool PlayerDashed()
+    {
+        return playerInputSystem.Player.Dash.triggered;
+    }
 }
