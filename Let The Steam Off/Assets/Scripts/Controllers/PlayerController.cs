@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,8 +11,19 @@ public class PlayerController : MonoBehaviour
     private bool groundedPlayer;
     public Transform playerBody;
 
+    public MovementState state;
+    public enum MovementState
+    {
+        walking,
+        sprinting,
+        crouching,
+        air
+    }
 
     [SerializeField] private float playerSpeed = 2.0f;
+    public float playerWalkingSpeed = 2.0f;
+    public float playerCrouchSpeed = 1.0f;
+    public float playerSprintSpeed = 18.0f;
     [SerializeField] private float jumpHeight = 1.0f;
     [SerializeField] private float gravityValue = -9.81f;
     [SerializeField] private float dashSpeed = 20.0f;
@@ -37,6 +49,34 @@ public class PlayerController : MonoBehaviour
         PlayerJumped();
         PlayerDashed();
         PlayerGravity();
+        StateHandle();
+    }
+
+    private void StateHandle()
+    {
+        if(!inputManager.PlayerCrouched())
+            playerController.height = 2.0f;
+
+        if (groundedPlayer && inputManager.PlayerCrouched())
+        {
+            playerController.height = 1.0f;
+            state = MovementState.crouching;
+            playerSpeed = playerCrouchSpeed;
+        }
+        else if (groundedPlayer && inputManager.PlayerSprint())
+        {
+            state = MovementState.sprinting;
+            playerSpeed = playerSprintSpeed;
+        }
+        else if (groundedPlayer)
+        {
+            state = MovementState.walking;
+            playerSpeed = playerWalkingSpeed;
+        }
+        else
+        {
+            state = MovementState.air;
+        }
     }
 
     private void PlayerDashed()

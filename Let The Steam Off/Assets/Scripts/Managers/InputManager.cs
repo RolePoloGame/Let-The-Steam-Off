@@ -57,6 +57,11 @@ public class InputManager : MonoBehaviour
         return playerInputSystem.Player.Crouch.IsPressed();
     }
 
+    public bool PlayerSprint()
+    {
+        return playerInputSystem.Player.Sprint.IsPressed();
+    }
+
     public bool PlayerJumped()
     {
         return playerInputSystem.Player.Jump.triggered;

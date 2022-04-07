@@ -328,9 +328,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerBody: {fileID: 1333742292}
-  playerSpeed: 2
+  state: 0
+  playerSpeed: 5
+  playerWalkingSpeed: 5
+  playerCrouchSpeed: 3
+  playerSprintSpeed: 10
   jumpHeight: 1
-  gravityValue: -9.81
+  gravityValue: -19.81
   dashSpeed: 20
   dashTime: 0.15
   dashRate: 1
