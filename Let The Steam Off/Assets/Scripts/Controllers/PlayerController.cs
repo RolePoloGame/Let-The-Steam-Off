@@ -16,8 +16,7 @@ public class PlayerController : MonoBehaviour
     {
         walking,
         sprinting,
-        crouching,
-        air
+        crouching
     }
 
     [SerializeField] private float playerSpeed = 2.0f;
@@ -57,25 +56,24 @@ public class PlayerController : MonoBehaviour
         if(!inputManager.PlayerCrouched())
             playerController.height = 2.0f;
 
-        if (groundedPlayer && inputManager.PlayerCrouched())
+        if (inputManager.PlayerCrouched())
         {
             playerController.height = 1.0f;
             state = MovementState.crouching;
-            playerSpeed = playerCrouchSpeed;
+            if(groundedPlayer)
+                playerSpeed = playerCrouchSpeed;
         }
-        else if (groundedPlayer && inputManager.PlayerSprint())
+        else if (inputManager.PlayerSprint())
         {
             state = MovementState.sprinting;
-            playerSpeed = playerSprintSpeed;
-        }
-        else if (groundedPlayer)
-        {
-            state = MovementState.walking;
-            playerSpeed = playerWalkingSpeed;
+            if (groundedPlayer)
+                playerSpeed = playerSprintSpeed;
         }
         else
         {
-            state = MovementState.air;
+            state = MovementState.walking;
+            if (groundedPlayer)
+                playerSpeed = playerWalkingSpeed;
         }
     }
 
