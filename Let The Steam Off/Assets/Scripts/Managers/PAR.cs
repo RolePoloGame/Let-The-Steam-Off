@@ -6,26 +6,11 @@ using System;
 
 public class PAR : MonoBehaviour
 {
-    public static PAR Instance { get; private set; }
+    public static PARSettings Get { get; private set; }
     void Awake()
     {
-        Instance = this;   
+        Get = Instance;
     }
-
-    public InputManager InputManager
-    {
-        get
-        {
-            return InputManager.Instance;
-        }
-    }
-
-    public GameObjectReference Player;
-
-    [Serializable]
-    public class GameObjectReference
-    {
-        public GameObject GameObject;
-        public Transform Transform;
-    }
+    [Expandable]
+    public PARSettings Instance;
 }

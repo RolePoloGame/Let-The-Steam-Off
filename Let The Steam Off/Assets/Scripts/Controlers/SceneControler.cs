@@ -1,3 +1,4 @@
+using NaughtyAttributes;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -15,8 +16,9 @@ public class SceneControler : MonoBehaviour
         Load = this;
         Load.Scene(GameScenes.sc_MainMenu);
     }
-
+    [HideInInspector]
     public float Progress = 0.0f;
+    [HideInInspector]
     public bool isDone = false;
 
     private static GameScenes SceneToLoad;
