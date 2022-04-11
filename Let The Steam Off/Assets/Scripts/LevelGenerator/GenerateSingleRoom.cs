@@ -27,6 +27,7 @@ public class GenerateSingleRoom : MonoBehaviour
     {
         GenerateGrid(floorBlockObject);
         GenerateWalls(wallBlockObject);
+        SpawnObject();
         CreateNodes();
     }
 
@@ -79,5 +80,25 @@ public class GenerateSingleRoom : MonoBehaviour
     private void CreateNodes()
     {
 
+    }
+
+    private void SpawnObject()
+    {
+        for (int c = 0; c < 20; c++)
+        {
+            GameObject toPlaceObject = Instantiate(objectToSpawn, ObjectSpawnLocation(), Quaternion.identity);
+        }
+    }
+    private Vector3 ObjectSpawnLocation()
+    {
+        int rndIndex = Random.Range(0, floorPositions.Count);
+
+        Vector3 newPosition = new Vector3(
+                floorPositions[rndIndex].x,
+                floorPositions[rndIndex].y + 1.5f,
+                floorPositions[rndIndex].z
+            );
+        floorPositions.RemoveAt(rndIndex);
+        return newPosition;
     }
 }
