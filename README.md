@@ -1,5 +1,5 @@
 # Let the Steam Off
-![Let The Steam Off] (Resources/Presentations/Logo/Title_Gold.png "Let the Steam Off Logo")
+![Let The Steam Off](Resources/Presentations/Logo/Title_Gold.png "Let the Steam Off Logo")
 
 ## Who are we?
 Eryk, Jordan, Grzegorz and Przemek, 4 IT students at the University of Opole in Poland.
