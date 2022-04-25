@@ -12,3 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38735afda73fdf04581fb16ea214f697, type: 3}
   m_Name: MainMenu
   m_EditorClassIdentifier: 
+  Player:
+    GameObject: {fileID: 0}
+    Transform: {fileID: 0}
+  OverrideSceneLoader: 1
+  OverridenScene: 3
