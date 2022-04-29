@@ -52,6 +52,16 @@ public class InputManager : MonoBehaviour
         return playerInputSystem.Player.Look.ReadValue<Vector2>();
     }
 
+    public bool PlayerJumped()
+    {
+        return playerInputSystem.Player.Jump.IsPressed();
+    }
+
+    public bool PlayerDashed()
+    {
+        return playerInputSystem.Player.Dash.triggered;
+    }
+
     public bool PlayerCrouched()
     {
         return playerInputSystem.Player.Crouch.IsPressed();
@@ -60,15 +70,5 @@ public class InputManager : MonoBehaviour
     public bool PlayerSprint()
     {
         return playerInputSystem.Player.Sprint.IsPressed();
-    }
-
-    public bool PlayerJumped()
-    {
-        return playerInputSystem.Player.Jump.triggered;
-    }
-
-    public bool PlayerDashed()
-    {
-        return playerInputSystem.Player.Dash.triggered;
     }
 }

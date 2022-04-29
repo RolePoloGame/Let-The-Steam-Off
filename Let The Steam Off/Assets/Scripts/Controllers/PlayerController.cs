@@ -5,123 +5,167 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    private CharacterController playerController;
-    private InputManager inputManager;
-    private Vector3 playerVelocity;
-    private bool groundedPlayer;
-    public Transform playerBody;
+    private float moveSpeed;
+    public float walkSpeed;
+    public float sprintSpeed;
+    public float crouchSpeed;
+    public float jumpForce;
+    private float jumpCooldown = 0.3f;
+    private bool readyToJump = true;
+    public float dashCooldown;
+    public float dashDuration;
+    private bool readyToDash = true;
+    private bool speedLimit = true;
+    private float startPlayerScale;
 
-    public MovementState state;
-    public enum MovementState
+    public float groundDrag;
+    public float playerHeight;
+    public float airMultilpier;
+    public LayerMask whatIsGround;
+    bool grounded;
+
+    private Transform orientation;
+
+    Vector3 moveDirection;
+
+    private Rigidbody rb;
+    private InputManager inputManager;
+
+    private MovementState state;
+
+    private enum MovementState
     {
         walking,
         sprinting,
-        crouching
+        crouching,
+        air
     }
 
-    [SerializeField] private float playerSpeed = 2.0f;
-    public float playerWalkingSpeed = 2.0f;
-    public float playerCrouchSpeed = 1.0f;
-    public float playerSprintSpeed = 18.0f;
-    [SerializeField] private float jumpHeight = 1.0f;
-    [SerializeField] private float gravityValue = -9.81f;
-    [SerializeField] private float dashSpeed = 20.0f;
-    [SerializeField] private float dashTime = 0.15f;
-    private float nextDash;
-    [SerializeField] private float dashRate = 1.0f;
-
-
-    private void Start()
+    void Start()
     {
-        playerController = GetComponent<CharacterController>();
         inputManager = InputManager.Instance;
+        rb = GetComponent<Rigidbody>();
+        rb.freezeRotation = true;
+        orientation = GetComponent<Transform>();
+
+        startPlayerScale = transform.localScale.y;
     }
 
-    void Update()
+    private void Update()
     {
-        StopFallingIfGrounded();
-
-        Vector2 movement = inputManager.GetPlayerMovement();
-        Vector3 move = new Vector3(movement.x, 0f, movement.y);
-        move = playerBody.forward * move.z + playerBody.right * move.x;
-        playerController.Move(move * Time.deltaTime * playerSpeed);
-        PlayerJumped();
-        PlayerDashed();
-        PlayerGravity();
-        StateHandle();
+        Crouch();
+        Dash();
+        SpeedControl();
+        grounded = Physics.Raycast(transform.position, Vector3.down, playerHeight * 0.5f + 0.1f, whatIsGround);
+        if (grounded && speedLimit)
+            rb.drag = groundDrag;
+        else
+            rb.drag = 0;
     }
 
-    private void StateHandle()
+    void FixedUpdate()
     {
-        if(!inputManager.PlayerCrouched())
-            playerController.height = 2.0f;
+        MovePlayer();
+        Jump();
+        StateHandler();
+    }
 
-        if (inputManager.PlayerCrouched())
+    private void StateHandler()
+    {
+        if (grounded && inputManager.PlayerCrouched())
         {
-            playerController.height = 1.0f;
             state = MovementState.crouching;
-            if(groundedPlayer)
-                playerSpeed = playerCrouchSpeed;
-        }
-        else if (inputManager.PlayerSprint())
+            moveSpeed = crouchSpeed;
+        } else if(grounded && inputManager.PlayerSprint())
         {
             state = MovementState.sprinting;
-            if (groundedPlayer)
-                playerSpeed = playerSprintSpeed;
+            moveSpeed = sprintSpeed;
+        }else if (grounded)
+        {
+            state = MovementState.walking;
+            moveSpeed = walkSpeed;
         }
         else
         {
-            state = MovementState.walking;
-            if (groundedPlayer)
-                playerSpeed = playerWalkingSpeed;
+            state = MovementState.air;
         }
     }
 
-    private void PlayerDashed()
+    private void MovePlayer()
     {
-        if (inputManager.PlayerDashed() && Time.time > nextDash)
-        {
-            StartCoroutine(Dash());
-            nextDash = Time.time + dashRate;
-        }
-        return;
+        Vector2 movement = inputManager.GetPlayerMovement();
+        moveDirection = new Vector3(movement.x, 0f, movement.y);
+        moveDirection = orientation.forward * moveDirection.z + orientation.right * moveDirection.x;
+
+        if (grounded)
+            rb.AddForce(moveDirection * moveSpeed * 10f, ForceMode.Force);
+        else
+            rb.AddForce(moveDirection * moveSpeed * 10f * airMultilpier, ForceMode.Force);
     }
 
-    IEnumerator Dash()
+    private void SpeedControl()
     {
-        float startTime = Time.time;
+        Vector3 flatVel = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
 
-        while(Time.time < startTime + dashTime)
+        if(flatVel.magnitude > moveSpeed && speedLimit)
         {
+            Vector3 limitedVel = flatVel.normalized * moveSpeed;
+            rb.velocity = new Vector3(limitedVel.x, rb.velocity.y, limitedVel.z);
+        }
+    }
+
+    private void Crouch()
+    {
+        if (inputManager.PlayerCrouched())
+        {
+            transform.localScale = new Vector3(transform.localScale.x, startPlayerScale / 1.5f, transform.localScale.z);
+        }
+        else
+        {
+            transform.localScale = new Vector3(transform.localScale.x, startPlayerScale, transform.localScale.z);
+        }
+    }
+
+    private void Dash()
+    {
+        if(inputManager.PlayerDashed() && readyToDash)
+        {
+            readyToDash = false;
+            speedLimit = false;
+            Debug.Log("dash");
             Vector2 movement = inputManager.GetPlayerMovement();
-            Vector3 move = new Vector3(movement.x, 0f, movement.y);
-            move = playerBody.forward * move.z + playerBody.right * move.x;
-            playerController.Move(move * dashSpeed * Time.deltaTime);
+            moveDirection = new Vector3(movement.x, 0f, movement.y);
+            moveDirection = orientation.forward * moveDirection.z + orientation.right * moveDirection.x;
+            rb.AddForce(moveDirection * moveSpeed * 100f, ForceMode.Force);
 
-            yield return null;
+            Invoke(nameof(ResetDash), dashCooldown);
+            Invoke(nameof(increaseSpeedLimit), dashDuration);
         }
     }
 
-    private void PlayerGravity()
+    private void increaseSpeedLimit()
     {
-        playerVelocity.y += gravityValue * Time.deltaTime;
-        playerController.Move(playerVelocity * Time.deltaTime);
+        speedLimit = true;
+    }
+    private void ResetDash()
+    {
+        readyToDash = true;
     }
 
-    private void PlayerJumped()
+    private void Jump()
     {
-        if (inputManager.PlayerJumped() && groundedPlayer)
+        if (inputManager.PlayerJumped() && readyToJump && grounded)
         {
-            playerVelocity.y += Mathf.Sqrt(jumpHeight * -3.0f * gravityValue);
+            rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
+            readyToJump = false;
+            rb.AddForce(transform.up * jumpForce, ForceMode.Impulse);
+
+            Invoke(nameof(ResetJump), jumpCooldown);
         }
     }
 
-    private void StopFallingIfGrounded()
+    private void ResetJump()
     {
-        groundedPlayer = playerController.isGrounded;
-        if (groundedPlayer && playerVelocity.y < 0)
-        {
-            playerVelocity.y = 0f;
-        }
+        readyToJump = true;
     }
 }
