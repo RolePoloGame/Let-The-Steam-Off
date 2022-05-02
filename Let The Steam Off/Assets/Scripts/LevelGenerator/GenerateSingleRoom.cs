@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GenerateSingleRoom : MonoBehaviour
+public class GenerateSingleRoom : BaseClass
 {
 
     private List<Vector3> floorPositions = new List<Vector3>();
@@ -14,77 +14,76 @@ public class GenerateSingleRoom : MonoBehaviour
     public GameObject floorBlockObject;
     public GameObject wallBlockObject;
     public GameObject objectToSpawn;
-    public GameObject player;
+
 
     private Vector3 startPosition;
 
-    private int worldSizeX = 10;
-    private int worldSizeZ = 10;
-    private int wallsHeight = 5;
 
     // Start is called before the first frame update
     void Start()
     {
-        GenerateGrid(floorBlockObject);
-        GenerateWalls(wallBlockObject);
-        SpawnObject();
-        CreateNodes();
+        GenerateGrid(floorBlockObject, worldSizeX, worldSizeZ);
+        GenerateWalls(wallBlockObject, worldSizeX, worldSizeZ,roomSize);
+        SpawnObject(20);
+        
     }
-
     // Update is called once per frame
     void Update()
     {
         
     }
 
-    private void GenerateGrid(GameObject spawnedObject)
+    private void GenerateGrid(GameObject spawnedObject, int SizeX, int SizeZ)
     {
-        for (int x = -worldSizeX; x < worldSizeX; x++)
+        for (int x = -SizeX+1; x < SizeX; x++)
         {
-            for (int z = -worldSizeZ; z < worldSizeZ; z++)
+            for (int z = -SizeZ+1; z < SizeZ; z++)
             {
-                Vector3 position = new Vector3(x * 1 + startPosition.x, 0, z * 1 + startPosition.z);
-                GameObject floor = Instantiate(spawnedObject, position, Quaternion.identity);
-                floorContainer.Add(position, floor);
-                floorPositions.Add(floor.transform.position);
-                floor.transform.SetParent(transform);
+                CreateFloor(spawnedObject, new Vector3(x * 1 + startPosition.x, 1, z * 1 + startPosition.z));
             }
         }
     }
-
-    private void GenerateWalls(GameObject spawnedObject)
+    private void CreateFloor(GameObject spawnedObject, Vector3 position)
     {
-        for (int x = 0; x < wallsHeight; x++)
-        {
-            for (int z = -worldSizeZ; z < worldSizeZ; z++)
-            {
-
-                CreateWall(spawnedObject, new Vector3(worldSizeX, x * 1, z + startPosition.z));
-                CreateWall(spawnedObject, new Vector3(-worldSizeX - 1, x * 1, z + startPosition.z));
-                CreateWall(spawnedObject, new Vector3(z + startPosition.x, x, worldSizeZ));
-                CreateWall(spawnedObject, new Vector3(z + startPosition.x, x, -worldSizeZ - 1));
-
-            }
-        }
+        GameObject floor = Instantiate(spawnedObject, position, Quaternion.identity);
+        floorContainer.Add(position, floor);
+        floorPositions.Add(floor.transform.position);
+        floor.transform.SetParent(transform);
     }
 
-    private void CreateWall(GameObject spawnedObject, Vector3 newposition)
+    private void GenerateWalls(GameObject spawnedObject, int SizeX, int SizeZ, int roomSize)
     {
-        Vector3 position = newposition;
+
+        y_WallPossition = (int)wallBlockObject.transform.localScale.y/2;
+
+        for (int z = -SizeZ+1; z < SizeZ; z++)
+            {
+                CreateWall(spawnedObject, new Vector3(worldSizeX, y_WallPossition, z + startPosition.z));
+                CreateWall(spawnedObject, new Vector3(-worldSizeX, y_WallPossition, z + startPosition.z));
+            }
+        for (int x = -SizeX + 1; x < SizeX; x++)
+        {
+            if (x >= (randDoor - roomSize) && x <= (randDoor + roomSize))
+            {
+                continue;
+            }
+            CreateWall(spawnedObject, new Vector3(x + startPosition.x, y_WallPossition, worldSizeZ));
+            CreateWall(spawnedObject, new Vector3(x + startPosition.x, y_WallPossition, -worldSizeZ));
+        }
+
+    }
+    
+    private void CreateWall(GameObject spawnedObject, Vector3 position)
+    {
         GameObject wall = Instantiate(spawnedObject, position, Quaternion.identity);
         wallsContainer.Add(position, wall);
         wallsPositions.Add(wall.transform.position);
         wall.transform.SetParent(transform);
     }
 
-    private void CreateNodes()
+    private void SpawnObject(int No_of_objects)
     {
-
-    }
-
-    private void SpawnObject()
-    {
-        for (int c = 0; c < 20; c++)
+        for (int c = 0; c < No_of_objects; c++)
         {
             GameObject toPlaceObject = Instantiate(objectToSpawn, ObjectSpawnLocation(), Quaternion.identity);
         }
