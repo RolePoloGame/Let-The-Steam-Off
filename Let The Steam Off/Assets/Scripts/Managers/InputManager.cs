@@ -71,4 +71,14 @@ public class InputManager : MonoBehaviour
     {
         return playerInputSystem.Player.Sprint.IsPressed();
     }
+
+    public bool PlayerShooting()
+    {
+        return playerInputSystem.Player.Shoot.IsPressed();
+    }
+
+    public bool PlayerSingleShoot()
+    {
+        return playerInputSystem.Player.Shoot.triggered;
+    }
 }
