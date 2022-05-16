@@ -14,12 +14,14 @@ public class PlayerStartRoom : BaseClass
     public GameObject floorBlockObject;
     public GameObject wallBlockObject;
 
+
     // Start is called before the first frame update
     void Start()
     {
         y_WallPossition = (int)wallBlockObject.transform.localScale.y / 2;
         GenerateStartRoom(floorBlockObject, wallBlockObject, roomSize);
     }
+
 
 
     // Update is called once per frame

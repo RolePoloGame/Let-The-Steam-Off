@@ -14,9 +14,11 @@ public class GenerateSingleRoom : BaseClass
     public GameObject floorBlockObject;
     public GameObject wallBlockObject;
     public GameObject objectToSpawn;
+    public GameObject enemyObject;
 
 
     private Vector3 startPosition;
+
 
 
     // Start is called before the first frame update
@@ -24,9 +26,29 @@ public class GenerateSingleRoom : BaseClass
     {
         GenerateGrid(floorBlockObject, worldSizeX, worldSizeZ);
         GenerateWalls(wallBlockObject, worldSizeX, worldSizeZ,roomSize);
-        SpawnObject(20);
-        
+        Debug.Log("Przed" + floorPositions.Count);
+        SpawnObject((worldSizeX *worldSizeZ)/5);
+        SpawnEnemy((worldSizeX * worldSizeZ)/5);
+        Debug.Log("Po" + floorPositions.Count);
     }
+
+    private void SpawnEnemy(int No_of_opponents)
+    {
+        do
+        {
+            int ranIndx = Random.Range(0,floorPositions.Count);
+            Vector3 position = new Vector3(
+                floorPositions[ranIndx].x,
+                floorPositions[ranIndx].y + 1.5f,
+                floorPositions[ranIndx].z
+            );
+
+            Instantiate(enemyObject, position, Quaternion.identity);
+            floorPositions.RemoveAt(ranIndx);
+            No_of_opponents--;
+        } while (No_of_opponents >= 0);
+    }
+
     // Update is called once per frame
     void Update()
     {

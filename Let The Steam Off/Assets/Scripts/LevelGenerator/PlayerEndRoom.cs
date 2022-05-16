@@ -13,13 +13,14 @@ public class PlayerEndRoom : BaseClass
 
     public GameObject floorBlockObject;
     public GameObject wallBlockObject;
-
+    public GameObject PlayerRoom;
 
     // Start is called before the first frame update
     void Start()
     {
         y_WallPossition = (int)wallBlockObject.transform.localScale.y / 2;
         GenerateEndRoom(floorBlockObject, wallBlockObject, roomSize);
+        TriggerLaunch(PlayerRoom);
     }
 
     // Update is called once per frame
@@ -56,6 +57,13 @@ public class PlayerEndRoom : BaseClass
         endRoomWallsContainer.Add(position, wall);
         endRoomWallsPos.Add(wall.transform.position);
         wall.transform.SetParent(transform);
+    }
+
+    private void TriggerLaunch(GameObject PlayerRoom)
+    {
+        PlayerRoom.transform.position = new Vector3(randDoor, roomSize, -worldSizeZ - 2);
+        PlayerRoom.transform.localScale = new Vector3(roomSize + 1, roomSize-1, roomSize-1);
+
     }
 
 }
