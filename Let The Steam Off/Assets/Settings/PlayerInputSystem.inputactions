@@ -1,10 +1,19 @@
 {
-    "name": "PlayerController",
+    "name": "PlayerInputSystem",
     "maps": [
         {
             "name": "Player",
             "id": "23808367-126d-4607-8c67-e6681549bf20",
             "actions": [
+                {
+                    "name": "Dash",
+                    "type": "Button",
+                    "id": "439adfc5-915e-456d-b317-090ce4d2338b",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
                 {
                     "name": "Movement",
                     "type": "PassThrough",
@@ -37,6 +46,24 @@
                     "type": "PassThrough",
                     "id": "abe31386-1159-406f-850c-932d724bae4e",
                     "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Sprint",
+                    "type": "Button",
+                    "id": "fa483054-342e-49c3-9698-b6b1fb0f33bf",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Shoot",
+                    "type": "Button",
+                    "id": "729e88b7-b83f-4c6c-9536-5e82e34e178a",
+                    "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -128,6 +155,39 @@
                     "processors": "",
                     "groups": "",
                     "action": "Look",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "47a4ff0a-624d-4da5-8bda-9f4196fc84a3",
+                    "path": "<Keyboard>/q",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Dash",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "df91d21c-4549-4a43-ab64-abeedb75ee39",
+                    "path": "<Keyboard>/shift",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Sprint",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "94d8c251-3d8a-44f8-8d69-9c4477bc844c",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Shoot",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

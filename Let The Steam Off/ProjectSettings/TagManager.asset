@@ -6,6 +6,8 @@ TagManager:
   tags:
   - SpawnPoint
   - EnemySpawnPoint
+  - Bullet
+  - Hitbox
   layers:
   - Default
   - TransparentFX
@@ -17,7 +19,7 @@ TagManager:
   - 
   - 
   - 
-  - 
+  - whatIsGround
   - 
   - 
   - 

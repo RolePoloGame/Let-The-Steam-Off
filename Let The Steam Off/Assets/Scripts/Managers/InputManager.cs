@@ -52,13 +52,33 @@ public class InputManager : MonoBehaviour
         return playerInputSystem.Player.Look.ReadValue<Vector2>();
     }
 
+    public bool PlayerJumped()
+    {
+        return playerInputSystem.Player.Jump.IsPressed();
+    }
+
+    public bool PlayerDashed()
+    {
+        return playerInputSystem.Player.Dash.triggered;
+    }
+
     public bool PlayerCrouched()
     {
         return playerInputSystem.Player.Crouch.IsPressed();
     }
 
-    public bool PlayerJumped()
+    public bool PlayerSprint()
     {
-        return playerInputSystem.Player.Jump.triggered;
+        return playerInputSystem.Player.Sprint.IsPressed();
+    }
+
+    public bool PlayerShooting()
+    {
+        return playerInputSystem.Player.Shoot.IsPressed();
+    }
+
+    public bool PlayerSingleShoot()
+    {
+        return playerInputSystem.Player.Shoot.triggered;
     }
 }
