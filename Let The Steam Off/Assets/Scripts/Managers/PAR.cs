@@ -6,12 +6,14 @@ using System;
 
 public class PAR : MonoBehaviour
 {
-    public static PAR Instance { get; private set; }
+    public static PAR Get { get; private set; }
     void Awake()
     {
-        Instance = this;   
+        if (Get == null)
+            Get = this;
+        else
+            Destroy(gameObject);
     }
-
     public InputManager InputManager
     {
         get
@@ -28,4 +30,5 @@ public class PAR : MonoBehaviour
         public GameObject GameObject;
         public Transform Transform;
     }
+
 }
