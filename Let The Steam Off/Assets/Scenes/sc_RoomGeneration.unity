@@ -168,6 +168,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   floorBlockObject: {fileID: 7809447969854797927, guid: 11413912660297a479beb0cbdbf305ab, type: 3}
   wallBlockObject: {fileID: 5203479110288466438, guid: 9237829028d23d74da76073ef9309eac, type: 3}
+  playerObject: {fileID: 5857139661573163398, guid: d1e7935210f2f484980c6471244aeb6f, type: 3}
 --- !u!1 &462070706
 GameObject:
   m_ObjectHideFlags: 0
