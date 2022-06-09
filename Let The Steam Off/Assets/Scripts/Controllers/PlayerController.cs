@@ -2,7 +2,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+/// <summary>
+/// This class is responsible for player movement and its mechanics (speed, jump force, dash cooldown, ground drag)
+/// </summary>
 public class PlayerController : MonoBehaviour
 {
     private float moveSpeed;
@@ -40,7 +42,9 @@ public class PlayerController : MonoBehaviour
         crouching,
         air
     }
-
+    /// <summary>
+    /// In this method we get player's starting scale, rigidbody and transform component required to move player's body.
+    /// </summary>
     void Start()
     {
         inputManager = InputManager.Instance;
@@ -50,7 +54,10 @@ public class PlayerController : MonoBehaviour
 
         startPlayerScale = transform.localScale.y;
     }
-
+    /// <summary>
+    /// In Update method we can quickly check in what order player movement methods are executed.
+    /// Also it checks if player is grounded and applies groundDrag.
+    /// </summary>
     private void Update()
     {
         Crouch();
@@ -62,14 +69,18 @@ public class PlayerController : MonoBehaviour
         else
             rb.drag = 0;
     }
-
+    /// <summary>
+    /// In FixedUpdate method we can quickly check in what order player movement methods which require physics calculations are executed. 
+    /// </summary>
     void FixedUpdate()
     {
         MovePlayer();
         Jump();
         StateHandler();
     }
-
+    /// <summary>
+    /// In this method we are changing player state which defines players speed.
+    /// </summary>
     private void StateHandler()
     {
         if (grounded && inputManager.PlayerCrouched())
@@ -90,7 +101,9 @@ public class PlayerController : MonoBehaviour
             state = MovementState.air;
         }
     }
-
+    /// <summary>
+    /// This method is responsible for player horizontal movement.
+    /// </summary>
     private void MovePlayer()
     {
         Vector2 movement = inputManager.GetPlayerMovement();
@@ -102,7 +115,9 @@ public class PlayerController : MonoBehaviour
         else
             rb.AddForce(moveDirection * moveSpeed * 10f * airMultilpier, ForceMode.Force);
     }
-
+    /// <summary>
+    /// This method controls player movement speed, so player cannot build up speed to enourmous levels.
+    /// </summary>
     private void SpeedControl()
     {
         Vector3 flatVel = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
@@ -113,7 +128,9 @@ public class PlayerController : MonoBehaviour
             rb.velocity = new Vector3(limitedVel.x, rb.velocity.y, limitedVel.z);
         }
     }
-
+    /// <summary>
+    /// This method is changing player size if player is crouching.
+    /// </summary>
     private void Crouch()
     {
         if (inputManager.PlayerCrouched())
@@ -125,7 +142,9 @@ public class PlayerController : MonoBehaviour
             transform.localScale = new Vector3(transform.localScale.x, startPlayerScale, transform.localScale.z);
         }
     }
-
+    /// <summary>
+    /// This method is increasing player speed by short moment and puts dash on cooldown
+    /// </summary>
     private void Dash()
     {
         if(inputManager.PlayerDashed() && readyToDash)
@@ -142,16 +161,23 @@ public class PlayerController : MonoBehaviour
             Invoke(nameof(increaseSpeedLimit), dashDuration);
         }
     }
-
+    /// <summary>
+    /// This method turns on player's speed limit.
+    /// </summary>
     private void increaseSpeedLimit()
     {
         speedLimit = true;
     }
+    /// <summary>
+    /// This method allow player to use dash again.
+    /// </summary>
     private void ResetDash()
     {
         readyToDash = true;
     }
-
+    /// <summary>
+    /// This method is adding vertical force to player's body when player want to jump.
+    /// </summary>
     private void Jump()
     {
         if (inputManager.PlayerJumped() && readyToJump && grounded)
@@ -163,7 +189,9 @@ public class PlayerController : MonoBehaviour
             Invoke(nameof(ResetJump), jumpCooldown);
         }
     }
-
+    /// <summary>
+    /// This method allow player to jump again.
+    /// </summary>
     private void ResetJump()
     {
         readyToJump = true;
