@@ -10,6 +10,9 @@ public class BaseClass : MonoBehaviour
     protected static int randDoor;
     protected static int roomSize = 3;
 
+    /// <summary>
+    /// Entering the size of the map and the variable needed to draw the place where the player's rooms are created.
+    /// </summary>
     private void Awake()
     {
         worldSizeX = Random.Range(5, 20);
