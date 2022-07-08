@@ -14,12 +14,15 @@ public class PAR : MonoBehaviour
         else
             Destroy(gameObject);
     }
-    public InputManager InputManager
+    private InputManager inputManager;
+    public InputManager GetInputManager()
     {
-        get
+        if (inputManager == null)
         {
-            return InputManager.Instance;
+            inputManager = gameObject.AddComponent<InputManager>();
         }
+
+        return inputManager;
     }
 
     public GameObjectReference Player;

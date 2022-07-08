@@ -7,26 +7,31 @@ using UnityEngine;
 /// </summary>
 public class ShootingController : MonoBehaviour
 {
-    public GameObject bullet;
-
-    public float bulletShootForce;
-    public float grenadeBulletUpwardForce;
-
-    public float spread, timeBetweenShots;
-    public int bulletsPerShot;
-    int bulletsShot;
-
-    public bool allowButtonHold;
-
-    bool shooting, readyToShoot;
-
-
+    private int bulletsShot;
+    private bool shooting;
+    private bool readyToShoot;
+    private bool allowInvoke = true;
+    private Vector3 middleScreenPoint = new Vector3(0.5f, 0.5f, 0);
+    private float defaultTargetRange = 75;
+    [SerializeField]
+    private GameObject bullet;
+    [SerializeField]
+    private float bulletShootForce;
+    [SerializeField]
+    private float spread;
+    [SerializeField]
+    private float timeBetweenShots;
+    [SerializeField]
+    private int bulletsPerShot;
+    [SerializeField]
+    private bool allowButtonHold;
+    [SerializeField]
     public Transform attackPoint;
-    public Camera fpsCam;
-
-    public bool allowInvoke = true;
+    [SerializeField]
+    private Camera fpsCam;
 
     private InputManager inputManager;
+
 
     /// <summary>
     /// We require InputManager to get information about mouse input.
@@ -34,7 +39,7 @@ public class ShootingController : MonoBehaviour
     /// </summary>
     void Start()
     {
-        inputManager = InputManager.Instance;
+        inputManager = PAR.Get.GetInputManager();
         readyToShoot = true;
     }
     /// <summary>
@@ -42,12 +47,12 @@ public class ShootingController : MonoBehaviour
     /// </summary>
     private void Update()
     {
-        if (allowButtonHold)
-            shooting = inputManager.PlayerShooting();
-        else
-            shooting = inputManager.PlayerSingleShoot();
+        if (!readyToShoot)
+            return;
 
-        if(readyToShoot && shooting)
+        shooting = inputManager.GetPlayerShooting(allowButtonHold);
+
+        if(shooting)
         {
             bulletsShot = 0;
             Shoot();
@@ -61,14 +66,11 @@ public class ShootingController : MonoBehaviour
     {
         readyToShoot = false;
 
-        Vector3 directWithoutSpread = CalculateBulletDirection();
-
-        Vector3 directWithSpread = AddSpreadToBulletDirection(directWithoutSpread);
+        Vector3 directWithSpread = CalculateBulletDirection();
 
         GameObject currentBullet = Instantiate(bullet, attackPoint.position, Quaternion.identity);
         currentBullet.transform.forward = directWithSpread.normalized;
         currentBullet.GetComponent<Rigidbody>().AddForce(directWithSpread.normalized * bulletShootForce, ForceMode.Impulse);
-        currentBullet.GetComponent<Rigidbody>().AddForce(fpsCam.transform.up * grenadeBulletUpwardForce, ForceMode.Impulse);
 
         bulletsShot++;
 
@@ -79,7 +81,7 @@ public class ShootingController : MonoBehaviour
         }
 
         if (bulletsShot < bulletsPerShot)
-            Invoke("Shoot", 0f);
+            Shoot();
     }
     /// <summary>
     /// This method adds spread to bullet direction
@@ -107,17 +109,17 @@ public class ShootingController : MonoBehaviour
     /// </returns>
     private Vector3 CalculateBulletDirection()
     {
-        Ray ray = fpsCam.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
+        Ray ray = fpsCam.ViewportPointToRay(middleScreenPoint);
         RaycastHit hit;
 
         Vector3 targetPoint;
         if (Physics.Raycast(ray, out hit))
             targetPoint = hit.point;
         else
-            targetPoint = ray.GetPoint(75);
+            targetPoint = ray.GetPoint(defaultTargetRange);
 
         Vector3 directWithoutSpread = targetPoint - attackPoint.position;
-        return directWithoutSpread;
+        return AddSpreadToBulletDirection(directWithoutSpread);
     }
 
     /// <summary>

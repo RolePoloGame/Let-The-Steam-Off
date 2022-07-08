@@ -7,51 +7,37 @@ using UnityEngine;
 /// </summary>
 public class PlayerController : MonoBehaviour
 {
+    private LayerMask groundLayer;
+    private float groundDrag = 5;
+    private float playerHeight = 2;
+    private float airMultilpier = 0.4f;
+    private float walkSpeed = 6;
+    private float sprintSpeed = 9;
+    private float crouchSpeed = 3;
+    private float jumpForce = 12;
+    private float dashCooldown = 2;
+    private float dashDuration = 0.2f;
     private float moveSpeed;
-    public float walkSpeed;
-    public float sprintSpeed;
-    public float crouchSpeed;
-    public float jumpForce;
     private float jumpCooldown = 0.3f;
+    private float rangeFromGround;
     private bool readyToJump = true;
-    public float dashCooldown;
-    public float dashDuration;
     private bool readyToDash = true;
-    private bool speedLimit = true;
+    private bool isSpeedLimitOff = true;
     private float startPlayerScale;
-
-    public float groundDrag;
-    public float playerHeight;
-    public float airMultilpier;
-    public LayerMask whatIsGround;
-    bool grounded;
-
-    private Transform orientation;
-
-    Vector3 moveDirection;
-
+    private bool grounded;
+    private Vector3 moveDirection;
     private Rigidbody rb;
     private InputManager inputManager;
 
-    private MovementState state;
-
-    private enum MovementState
-    {
-        walking,
-        sprinting,
-        crouching,
-        air
-    }
     /// <summary>
     /// In this method we get player's starting scale, rigidbody and transform component required to move player's body.
     /// </summary>
     void Start()
     {
-        inputManager = InputManager.Instance;
+        groundLayer = LayerMask.GetMask("Ground");
+        inputManager = PAR.Get.GetInputManager();
         rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true;
-        orientation = GetComponent<Transform>();
-
         startPlayerScale = transform.localScale.y;
     }
     /// <summary>
@@ -60,11 +46,11 @@ public class PlayerController : MonoBehaviour
     /// </summary>
     private void Update()
     {
-        Crouch();
-        Dash();
+        rangeFromGround = playerHeight * 0.5f + 0.1f;
+        grounded = Physics.Raycast(transform.position, Vector3.down, rangeFromGround, groundLayer);
         SpeedControl();
-        grounded = Physics.Raycast(transform.position, Vector3.down, playerHeight * 0.5f + 0.1f, whatIsGround);
-        if (grounded && speedLimit)
+        StateHandler();
+        if (grounded && isSpeedLimitOff)
             rb.drag = groundDrag;
         else
             rb.drag = 0;
@@ -74,31 +60,30 @@ public class PlayerController : MonoBehaviour
     /// </summary>
     void FixedUpdate()
     {
+        SpeedControl();
+        Dash();
+        Crouch();
         MovePlayer();
         Jump();
-        StateHandler();
     }
     /// <summary>
     /// In this method we are changing player state which defines players speed.
     /// </summary>
     private void StateHandler()
     {
-        if (grounded && inputManager.PlayerCrouched())
+        if (!grounded)
+            return;
+
+        moveSpeed = walkSpeed;
+
+        if (inputManager.GetPlayerSprint())
         {
-            state = MovementState.crouching;
-            moveSpeed = crouchSpeed;
-        } else if(grounded && inputManager.PlayerSprint())
-        {
-            state = MovementState.sprinting;
             moveSpeed = sprintSpeed;
-        }else if (grounded)
-        {
-            state = MovementState.walking;
-            moveSpeed = walkSpeed;
         }
-        else
+
+        if (inputManager.GetPlayerCrouched())
         {
-            state = MovementState.air;
+            moveSpeed = crouchSpeed;
         }
     }
     /// <summary>
@@ -108,7 +93,7 @@ public class PlayerController : MonoBehaviour
     {
         Vector2 movement = inputManager.GetPlayerMovement();
         moveDirection = new Vector3(movement.x, 0f, movement.y);
-        moveDirection = orientation.forward * moveDirection.z + orientation.right * moveDirection.x;
+        moveDirection = transform.forward * moveDirection.z + transform.right * moveDirection.x;
 
         if (grounded)
             rb.AddForce(moveDirection * moveSpeed * 10f, ForceMode.Force);
@@ -122,18 +107,18 @@ public class PlayerController : MonoBehaviour
     {
         Vector3 flatVel = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
 
-        if(flatVel.magnitude > moveSpeed && speedLimit)
-        {
-            Vector3 limitedVel = flatVel.normalized * moveSpeed;
-            rb.velocity = new Vector3(limitedVel.x, rb.velocity.y, limitedVel.z);
-        }
+        if (flatVel.magnitude <= moveSpeed && !isSpeedLimitOff)
+            return;
+
+        Vector3 limitedVel = flatVel.normalized * moveSpeed;
+        rb.velocity = new Vector3(limitedVel.x, rb.velocity.y, limitedVel.z);
     }
     /// <summary>
     /// This method is changing player size if player is crouching.
     /// </summary>
     private void Crouch()
     {
-        if (inputManager.PlayerCrouched())
+        if (inputManager.GetPlayerCrouched())
         {
             transform.localScale = new Vector3(transform.localScale.x, startPlayerScale / 1.5f, transform.localScale.z);
         }
@@ -147,26 +132,25 @@ public class PlayerController : MonoBehaviour
     /// </summary>
     private void Dash()
     {
-        if(inputManager.PlayerDashed() && readyToDash)
-        {
-            readyToDash = false;
-            speedLimit = false;
-            Debug.Log("dash");
-            Vector2 movement = inputManager.GetPlayerMovement();
-            moveDirection = new Vector3(movement.x, 0f, movement.y);
-            moveDirection = orientation.forward * moveDirection.z + orientation.right * moveDirection.x;
-            rb.AddForce(moveDirection * moveSpeed * 100f, ForceMode.Force);
+        if (!inputManager.GetPlayerDashed() && !readyToDash)
+            return;
 
-            Invoke(nameof(ResetDash), dashCooldown);
-            Invoke(nameof(increaseSpeedLimit), dashDuration);
-        }
+        readyToDash = false;
+        isSpeedLimitOff = false;
+        Vector2 movement = inputManager.GetPlayerMovement();
+        moveDirection = new Vector3(movement.x, 0f, movement.y);
+        moveDirection = transform.forward * moveDirection.z + transform.right * moveDirection.x;
+        rb.AddForce(moveDirection * moveSpeed * 100f, ForceMode.Force);
+
+        Invoke(nameof(ResetDash), dashCooldown);
+        Invoke(nameof(removeSpeedLimit), dashDuration);
     }
     /// <summary>
     /// This method turns on player's speed limit.
     /// </summary>
-    private void increaseSpeedLimit()
+    private void removeSpeedLimit()
     {
-        speedLimit = true;
+        isSpeedLimitOff = true;
     }
     /// <summary>
     /// This method allow player to use dash again.
@@ -180,14 +164,14 @@ public class PlayerController : MonoBehaviour
     /// </summary>
     private void Jump()
     {
-        if (inputManager.PlayerJumped() && readyToJump && grounded)
-        {
-            rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
-            readyToJump = false;
-            rb.AddForce(transform.up * jumpForce, ForceMode.Impulse);
+        if (!inputManager.GetPlayerJumped() && !readyToJump && !grounded)
+            return;
 
-            Invoke(nameof(ResetJump), jumpCooldown);
-        }
+        rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
+        readyToJump = false;
+        rb.AddForce(transform.up * jumpForce, ForceMode.Impulse);
+
+        Invoke(nameof(ResetJump), jumpCooldown);
     }
     /// <summary>
     /// This method allow player to jump again.

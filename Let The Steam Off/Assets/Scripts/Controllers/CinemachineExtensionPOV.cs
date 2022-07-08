@@ -6,17 +6,21 @@ using Cinemachine;
 /// </summary>
 public class CinemachineExtensionPOV : CinemachineExtension
 {
-    [SerializeField] private float clampAngle = 90f;
-    [SerializeField] private float rotatingSpeed = 90f;
-    private InputManager inputManager;
     private Vector3 startingRotation;
-    public Transform playerBody;
+    private float clampCameraAngle = 89f;
+    [SerializeField]
+    private float rotatingSpeed = 90f;
+    [SerializeField]
+    private Transform playerBody;
+
+    private InputManager inputManager;
+
     /// <summary>
     /// As we require InputManager to get information about mouse movement, we have to override parents Awake() function.
     /// </summary>
     protected override void Awake()
     {
-        inputManager = InputManager.Instance;
+        inputManager = PAR.Get.GetInputManager();
         base.Awake();
     }
 
@@ -54,7 +58,7 @@ public class CinemachineExtensionPOV : CinemachineExtension
                 Vector2 deltaInput = inputManager.GetPlayerLook();
                 startingRotation.x += deltaInput.x * rotatingSpeed * Time.deltaTime;
                 startingRotation.y -= deltaInput.y * rotatingSpeed * Time.deltaTime;
-                startingRotation.y = Mathf.Clamp(startingRotation.y, -clampAngle, clampAngle);
+                startingRotation.y = Mathf.Clamp(startingRotation.y, -clampCameraAngle, clampCameraAngle);
                 state.RawOrientation = Quaternion.Euler(startingRotation.y, startingRotation.x, 0f);
                 playerBody.rotation = Quaternion.Euler(0f, startingRotation.x, 0f);
             }

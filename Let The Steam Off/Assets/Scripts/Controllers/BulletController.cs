@@ -6,46 +6,35 @@ using UnityEngine;
 /// </summary>
 public class BulletController : MonoBehaviour
 {
-
-    private Rigidbody rb;
-    private float timeRemaining = 4;
-    /// <summary>
-    /// Start is called before first frame.
-    /// Here we are getting reference to bullet's rigidbody component.
-    /// </summary>
-    void Start()
-    {
-        rb = GetComponent<Rigidbody>();
-    }
+    private float bulletLifetime = 4;
 
     /// <summary>
-    /// Update is called once per frame.
-    /// Here we are checking how much bullet's lifetime left and if it hits 0 bullet will be destroyed.
+    /// Script is checking how much bullet's lifetime left and if it hits 0 bullet will be destroyed.
     /// </summary>
     private void Update()
     {
-        if (timeRemaining > 0)
-            timeRemaining -= Time.deltaTime;
-        if (timeRemaining <= 0)
+        if (bulletLifetime > 0)
+            bulletLifetime -= Time.deltaTime;
+        if (bulletLifetime <= 0)
         Destroy(gameObject);
     }
     /// <summary>
-    /// Here we are executing script depending on which GameObject we have hit with our bullet
+    /// Script is checking on which GameObject we have hit with our bullet
     /// </summary>
     /// <param name="collision">
     /// This paremeter holds information for collision such as reference to GameObject we have hit.
     /// </param>
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.tag == "Hitbox")
+        if (collision.gameObject.CompareTag("Hitbox"))
             // Place for kill mechanics
             Destroy(collision.gameObject);
 
-        if (collision.gameObject.tag == "Player")
+        if (collision.gameObject.CompareTag("Player"))
             // Place for player death
             return;
 
-        if (collision.gameObject.tag == "Bullet")
+        if (collision.gameObject.CompareTag("Bullet"))
             return;
 
         Destroy(gameObject);
