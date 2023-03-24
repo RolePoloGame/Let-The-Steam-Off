@@ -14,3 +14,13 @@ As a part of our Bachelor degree studies we are creating **Let the Steam Off** -
 
 ## Why should I play LtSO?
 Honestly we have no idea. But it's free, so why not give it a try?
+
+## Our Roles
+- Eryk
+Our 3D artist and 3D animator. He's responsible for creating art for the game.
+- Jordan
+Our Controler & AI developer. He's responsible for the most of gameplay and character controler elements.
+- Grzegorz
+Our Level Developer. He's responsible for implementation of level-generation and it's expansion.
+- Przemek
+Our Project Manager. He's responsible for designing the game, managing the team and providing assistance as the most experienced member of the team. 
